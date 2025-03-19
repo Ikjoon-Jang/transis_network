@@ -102,9 +102,13 @@ const NetworkGraph = () => {
 
     return (
 
-        <div style={{ height: "80vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-
-
+        <div style={{
+            height: "80vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative"
+        }}>
             {/* 범례 (왼쪽 배치) */}
             <div style={{
                 width: "200px",
@@ -115,9 +119,9 @@ const NetworkGraph = () => {
                 fontSize: "14px",
                 fontFamily: "Arial, sans-serif",
                 marginRight: "20px",
-                position: "fixed",  // 📌 화면에 고정
-                bottom: "150px",     // 📌 하단에서 50px 위로 배치
-                left: "50px"
+                position: "absolute",
+                left: "50px",
+                bottom: "50px"
             }}>
                 <h4 style={{ marginBottom: "10px", textAlign: "center" }}>업체 요약</h4>
                 <table>
