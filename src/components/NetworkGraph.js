@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactECharts from "echarts-for-react";
 
 const NetworkGraph = () => {
@@ -8,6 +8,18 @@ const NetworkGraph = () => {
         },
         tooltip: {
             trigger: "item",
+            //alwaysShowContent: true, // 툴팁이 자동으로 사라지지 않음
+            enterable: true, // 툴팁에 마우스를 올려도 닫히지 않음
+            position: function (point, params, dom, rect, size) {
+                // point: 마우스 좌표 [x, y]
+                // size.viewSize: [width, height] (차트 전체 크기)
+                // size.contentSize: [width, height] (툴팁 크기)
+
+                let x = point[0]; // 마우스 X 좌표
+                let y = point[1]; // 마우스 Y 좌표
+
+                return [x + 5, y + 5];  // 심볼에서 5px 정도만 떨어지게 위치 조정
+            },
             formatter: function (params) {
                 return `
                 <div style="padding: 2px; border-radius: 5px; border: 0px solid #FF7F00; background-color: #fff; text-align: left;">
@@ -44,8 +56,8 @@ const NetworkGraph = () => {
                     }
                 },
                 data: [
-                    { name: "Node 1", desc:"abc", x:1210, y:50, symbol: "triangle", symbolSize: 18, itemStyle: { color: "#ff33a8"}, value: "현대제철", description:"<strong>대한민국을 대표하는 철강 제조 기업으로, 현대자동차 그룹 계열사 중 하나</strong><br/><br/>● <strong>설립:</strong> 1953년 (구. 인천제철 → 현대제철로 사명 변경)<br>● <strong>본사:</strong> 대한민국 서울특별시<br>● <strong>주요사업:</strong> 철강 생산 (자동차 강판, 조선용 강재, 건설용 철근 등)<br>● <strong>모기업:</strong> 현대자동차 그룹<br>● <strong>홈페이지:</strong> https://www.hyundai-steel.com ", label: {formatter:"현대제철", position: "top", fontSize: 12, color: "#ff33a8" } },
-                    { name: "Node 2", x:1200, y:180, symbol: "triangle", symbolSize: 18, itemStyle: { color: "#ff33a8"}, value: "포스코", description:"<strong>대한민국을 대표하는 세계적인 철강 기업으로, 철강 생산량 기준 글로벌 TOP 5에 속하는 기업</strong><br/><br/>● <strong>설립:</strong> 1968년 (구. 포항제철 → POSCO로 사명 변경)<br>● <strong>본사:</strong> 대한민국 경상북도 포항시 (서울에도 사무소 운영)<br>● <strong>주요사업:</strong> 철강 생산 (자동차 강판, 조선·건설용 철강, 전기강판 등)<br>● <strong>모기업:</strong> 포스코홀딩스 (POSCO Holdings)<br>● <strong>홈페이지:</strong> https://www.posco.co.kr ", label: {formatter:"포스코", position: "top", fontSize: 12, color: "#ff33a8" } },
+                    { name: "Node 1", desc:"abc", x:1210, y:50, symbol: "triangle", symbolSize: 18, itemStyle: { color: "#ff33a8"}, value: "현대제철", description:"<strong>대한민국을 대표하는 철강 제조 기업으로, 현대자동차 그룹 계열사 중 하나</strong><br/><br/>● <strong>설립:</strong> 1953년 (구. 인천제철 → 현대제철로 사명 변경)<br>● <strong>본사:</strong> 대한민국 서울특별시<br>● <strong>주요사업:</strong> 철강 생산 (자동차 강판, 조선용 강재, 건설용 철근 등)<br>● <strong>모기업:</strong> 현대자동차 그룹<br>● <strong>홈페이지:</strong><a href='https://www.posco.co.kr' target='_blank'>https://www.hyundai-steel.com</a>", label: {formatter:"현대제철", position: "top", fontSize: 12, color: "#ff33a8" } },
+                    { name: "Node 2", x:1200, y:180, symbol: "triangle", symbolSize: 18, itemStyle: { color: "#ff33a8"}, value: "포스코", description:"<strong>대한민국을 대표하는 세계적인 철강 기업으로, 철강 생산량 기준 글로벌 TOP 5에 속하는 기업</strong><br/><br/>● <strong>설립:</strong> 1968년 (구. 포항제철 → POSCO로 사명 변경)<br>● <strong>본사:</strong> 대한민국 경상북도 포항시 (서울에도 사무소 운영)<br>● <strong>주요사업:</strong> 철강 생산 (자동차 강판, 조선·건설용 철강, 전기강판 등)<br>● <strong>모기업:</strong> 포스코홀딩스 (POSCO Holdings)<br>● <strong>홈페이지:</strong> <a href='https://www.posco.co.kr' target='_blank'>https://www.posco.co.kr</a>", label: {formatter:"포스코", position: "top", fontSize: 12, color: "#ff33a8" } },
 
                     { name: "Node 3", x:620, y:280, symbol: "triangle", symbolSize: 18, itemStyle: { color: "#ff33a8"}, value: "한융금속", label: {formatter:"한융금속", position: "top", fontSize: 12, color: "#ff33a8" } },
                     { name: "Node 4", x:600, y:320, symbol: "triangle", symbolSize: 18, itemStyle: { color: "#ff33a8"}, value: "HKM", label: {formatter:"HKM", position: "top", fontSize: 12, color: "#ff33a8" } },
@@ -115,7 +127,28 @@ const NetworkGraph = () => {
         { color: "#AD55E5", shape: "▲", level: "원자재", count: 6 }
     ];
 
-    //return <ReactECharts option={option} style={{ height: "800px" }} />;
+    useEffect(() => {
+        const chart = document.getElementById("echarts-container");
+
+        const handleMouseLeave = (e) => {
+            const tooltip = document.getElementById("custom-tooltip");
+            if (tooltip && !tooltip.contains(e.relatedTarget)) {
+                // 툴팁 영역을 벗어나면 툴팁 숨김
+                tooltip.style.display = "none";
+            }
+        };
+
+        if (chart) {
+            chart.addEventListener("mouseleave", handleMouseLeave);
+        }
+
+        return () => {
+            if (chart) {
+                chart.removeEventListener("mouseleave", handleMouseLeave);
+            }
+        };
+    }, []);
+
 
     return (
 
